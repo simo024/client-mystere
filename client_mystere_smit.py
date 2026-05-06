@@ -369,18 +369,22 @@ with tabs[-1]:
 
     # Export JSON
     st.markdown("### 💾 Export des données")
+
+    # Convertir toutes les valeurs non-sérialisables en string
+    identity_safe = {k: str(v) for k, v in identity.items()}
+
     export_data = {
-        "etablissement": identity,
-        "notes": notes,
+        "etablissement": identity_safe,
+        "notes": {k: int(v) for k, v in notes.items()},
         "commentaires": comments,
         "observations": obs,
-        "score_global": global_pct,
+        "score_global": int(global_pct) if global_pct is not None else None,
         "date_rapport": str(datetime.date.today()),
     }
     st.download_button(
         label="⬇️ Télécharger le rapport (JSON)",
         data=json.dumps(export_data, ensure_ascii=False, indent=2),
-        file_name=f"rapport_client_mystere_{identity.get('etablissement','').replace(' ','_')}_{datetime.date.today()}.json",
+        file_name=f"rapport_client_mystere_{identity.get('etablissement','').replace(' ','_')}_{str(datetime.date.today())}.json",
         mime="application/json",
     )
 
